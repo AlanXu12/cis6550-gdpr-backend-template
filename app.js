@@ -21,29 +21,41 @@ app.get('/', (req, res) => {
   res.send('Hello World!')
 });
 
-app.post('/record', jsonParser, (req, res) => {
-  console.log("req.body:", req.body);
+app.post('/record', jsonParser, async (req, res) => {
   // Check if consent is included and valid
-  console.log("new Date(req.body.consentExp):", new Date(req.body.consentExp));
-  console.log("new Date(Date.now()):", new Date(Date.now()));
-  console.log("new Date(req.body.consentExp) > new Date(Date.now()):", new Date(req.body.consentExp) > new Date(Date.now()));
   if (!req.body.consentExp || new Date(req.body.consentExp) <= new Date(Date.now())) {
-    res.send('No/invalid consent expire date')
-  } else {
-    // Convert date of birth to Date obj
-    let recordObj = req.body.record;
-    recordObj.dateOfBirth = new Date(recordObj.dateOfBirth);
-    mongoClient.connect(url, (err, db) => {
-      if (err) throw err;
-      let dbObj = db.db(req.body.db);
-      dbObj.collection(req.body.collection).insertOne(recordObj, (err, res)=>{
-        if (err) throw err;
-        console.log("1 record inserted");
-        db.close();
-      })
-    })
-    res.send('1 record inserted')
+    res.send('No/invalid consent expire date');
+    return;
   }
+  // Check if username is included
+  if (!req.body.username) {
+    res.send('No username');
+    return;
+  }
+  // Convert date of birth to Date obj
+  let recordObj = req.body.record;
+  recordObj.dateOfBirth = new Date(recordObj.dateOfBirth);
+  // Use username as the unique identifier
+  recordObj._id = req.body.username;
+  const dbClient = await mongoClient.connect(url, { useUnifiedTopology: true }).catch((err) => {console.log("1st err");});
+  if (!dbClient) return;
+  const dbObj = dbClient.db(req.body.db);
+  await dbObj.collection(req.body.collection).insertOne(recordObj).catch((err) => {console.log("last err"); return;});
+  // try {
+  //   let result = await dbObj.collection(req.body.collection).insertOne(recordObj);
+  // } catch (error) {
+  //   return res.status(402).end("err");
+  // }
+  const recordCentralObj = {
+    "username": req.body.username,
+    "serviceCollection": req.body.collection,
+    "consentExp": req.body.consentExp
+  };
+  await dbObj.collection("central").insertOne(recordCentralObj).catch((error) => {console.log("last err"); return;});
+  console.log("passed the last await");
+  dbClient.close();
+  return res.end('1 record inserted');
+
 });
 
 app.listen(port, () => {
