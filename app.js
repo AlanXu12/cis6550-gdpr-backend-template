@@ -39,7 +39,7 @@ app.post('/record', jsonParser, async (req, res) => {
   recordObj._id = req.body.username;
 
   // Connect to target DB
-  const dbClient = await mongoClient.connect(url, { useUnifiedTopology: true }).catch((err) => {console.log("1st err");});
+  const dbClient = await mongoClient.connect(url, { useUnifiedTopology: true }).catch((err) => {res.status(400).send(err);});
   if (!dbClient) return;
 
   // Try to insert the new record to the target collection
@@ -57,6 +57,26 @@ app.post('/record', jsonParser, async (req, res) => {
   if (!resultCentral) return;
   dbClient.close();
   return res.end('1 record inserted');
+});
+
+// Handler for adding new record to service collection
+app.get('/record', async (req, res) => {
+  // Get all params from query
+  let username = req.query.username;
+  let db = req.query.db;
+  let collection = req.query.collection;
+
+  // Connect to target DB
+  const dbClient = await mongoClient.connect(url, { useUnifiedTopology: true }).catch((err) => {res.status(400).send(err);});
+  if (!dbClient) return;
+
+  // Try to get the record correponing to the username in the target collection
+  const dbObj = dbClient.db(db);
+  const query = collection === "central" ? {username: username} : {_id: username}
+  const result = await dbObj.collection(collection).find(query).toArray().catch((err) => {res.status(400).send(err);});
+  if (!result) return;
+  dbClient.close();
+  return res.send(result);
 });
 
 app.listen(port, () => {
