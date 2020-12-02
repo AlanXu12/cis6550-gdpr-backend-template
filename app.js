@@ -109,6 +109,7 @@ app.get("/record/all", async (req, res) => {
   // Get all params from query
   let username = req.query.username;
   let db = req.query.db;
+  let toDownload = req.query.toDownload === "true" || false;
 
   // Connect to target DB
   const dbClient = await mongoClient
@@ -121,23 +122,53 @@ app.get("/record/all", async (req, res) => {
   // Try to get all collections that contains the username from central collection
   const dbObj = dbClient.db(db);
   const query = { username: username };
-  const projection = {
-    _id: 0,
-    username: 0,
-    serviceCollection: 1,
-    consentExp: 0,
+  const options = {
+    projection: { _id: 0, serviceCollection: 1 },
   };
   const result = await dbObj
     .collection("central")
-    .find(query)
-    .project(projection)
+    .find(query, options)
     .toArray()
     .catch((err) => {
       res.status(400).send(err);
     });
   if (!result) return res.status(500).end("Errors in Database");
+
+  // Try to get all info of the user from the collection name list
+  let allInfo = {};
+  const idQuery = { _id: username };
+  const idOptions = { projection: { _id: 0 } };
+  for (let index = 0; index < result.length; index++) {
+    let collection = result[index]["serviceCollection"];
+    let info = await dbObj
+      .collection(collection)
+      .find(idQuery, idOptions)
+      .toArray()
+      .catch((err) => {
+        res.status(400).send(err);
+      });
+    if (!info) return res.status(500).end("Errors in Database");
+    console.log("info:", info);
+    info.forEach((i) => {
+      for (key in i) {
+        allInfo[key] = i[key];
+      }
+    });
+  }
+
   dbClient.close();
-  return res.send(result);
+
+  // Determine whether the gathered info needs to be downloaded
+  if (!toDownload) {
+    return res.send(allInfo);
+  } else {
+    let json = JSON.stringify(allInfo);
+    let filename = "userInfo.json";
+    let mimetype = "application/json";
+    res.setHeader("Content-Type", mimetype);
+    res.setHeader("Content-disposition", "attachment; filename=" + filename);
+    return res.send(json);
+  }
 });
 
 app.listen(port, () => {
