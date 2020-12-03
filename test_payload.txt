@@ -14,6 +14,7 @@ localhost:8000/record
         "gender": "female",
         "dateOfBirth": "1986-01-30",
         "address": "test address6"
+        "email": "test1@testdomain.com"
     }
 }
 
