@@ -223,6 +223,43 @@ app.get("/contact/expire", async (req, res) => {
   return res.send(result);
 });
 
+// Hanlder for executing DB queries for internal usage
+app.get("/record/query", async (req, res) => {
+  // Get all params from query
+  const db = req.query.db;
+  const collection = req.query.collection;
+  let query;
+  let options;
+  try {
+    query = JSON.parse(req.query.query);
+    options = req.query.options ? JSON.parse(req.query.options) : {};
+  } catch (error) {
+    return res.status(400).end("Errors in query/options value");
+  }
+
+  // Connect to target DB
+  const dbClient = await mongoClient
+    .connect(url, { useUnifiedTopology: true })
+    .catch((err) => {
+      res.status(400).send(err);
+    });
+  if (!dbClient) return res.status(500).end("Database cannot be connected");
+
+  // Try to get all collections that contains the username from central collection
+  const dbObj = dbClient.db(db);
+  const result = await dbObj
+    .collection(collection)
+    .find(query, options)
+    .toArray()
+    .catch((err) => {
+      res.status(400).send(err);
+    });
+  if (!result) return res.status(500).end("Errors in Database");
+
+  dbClient.close();
+  return res.send(result);
+});
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}!`);
 });
