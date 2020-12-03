@@ -1,0 +1,56 @@
+[{
+  "_id": "test1",
+  "phoneNum": "1476476477",
+  "phonePlan": "New Customer Great Value",
+  "dateContractExp": {
+    "$date": "2021-12-31T00:00:00Z"
+  },
+  "paymentInfo": {
+    "cardNum": "1543299878765432",
+    "expireDate": "01/24"
+  }
+},{
+  "_id": "test2",
+  "phoneNum": "2476476477",
+  "phonePlan": "New Customer Great Value",
+  "dateContractExp": {
+    "$date": "2022-12-31T00:00:00Z"
+  },
+  "paymentInfo": {
+    "cardNum": "2543299878765432",
+    "expireDate": "02/22"
+  }
+},{
+  "_id": "test3",
+  "phoneNum": "3476476477",
+  "phonePlan": "New Customer Great Value",
+  "dateContractExp": {
+    "$date": "2023-12-31T00:00:00Z"
+  },
+  "paymentInfo": {
+    "cardNum": "3543299878765432",
+    "expireDate": "03/22"
+  }
+},{
+  "_id": "test4",
+  "phoneNum": "4476476477",
+  "phonePlan": "New Customer Great Value",
+  "dateContractExp": {
+    "$date": "2024-12-31T00:00:00Z"
+  },
+  "paymentInfo": {
+    "cardNum": "4543299878765432",
+    "expireDate": "04/22"
+  }
+},{
+  "_id": "test5",
+  "phoneNum": "5476476477",
+  "phonePlan": "Super Save",
+  "dateContractExp": {
+    "$date": "2025-12-31T00:00:00Z"
+  },
+  "paymentInfo": {
+    "cardNum": "5543299878765432",
+    "expireDate": "05/22"
+  }
+}]

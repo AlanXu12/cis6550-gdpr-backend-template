@@ -1,0 +1,36 @@
+======================= POST =======================
+localhost:8000/record
+
+----------------------- body -----------------------
+::::: profile :::::
+{
+    "db": "gdpr-s1",
+    "collection": "profile",
+    "consentExp": "2020-12-20",
+    "username": "test6",
+    "record": {
+        "firstName": "test6First",
+        "lastName": "test6Last",
+        "gender": "female",
+        "dateOfBirth": "1986-01-30",
+        "address": "test address6",
+        "email": "test1@testdomain.com"
+    }
+}
+
+::::: cellphone :::::
+{
+    "db": "gdpr-s1",
+    "collection": "cellphone",
+    "consentExp": "2020-11-20",
+    "username": "kyle",
+    "record": {
+        "phoneNum": "6476476477",
+        "phonePlan": "New Customer Great Value",
+        "dateContractExp": "2021-12-31",
+        "paymentInfo": {
+            "cardNum": "9876543298765432",
+            "expireDate": "03/24"
+        }
+    }
+}
