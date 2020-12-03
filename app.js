@@ -260,6 +260,62 @@ app.get("/record/query", async (req, res) => {
   return res.send(result);
 });
 
+// Handler for updating data stored in a collection
+app.patch("/record", jsonParser, async (req, res) => {
+  // Get all params from query
+  const db = req.body.db;
+  const collection = req.body.collection;
+  const username = req.body.username;
+  const serviceCollection = req.body.serviceCollection;
+  const field = req.body.field;
+  let newVal = req.body.newVal;
+  // Validate the query params values
+  if (collection === "central") {
+    if (!serviceCollection || field !== "consentExp") {
+      return res
+        .status(400)
+        .send(
+          "serviceCollection cannot be empty and only consentExp can be udpated if modifying data in central collection"
+        );
+    }
+    newVal = new Date(newVal);
+    if (
+      !(newVal instanceof Date && !isNaN(newVal)) ||
+      newVal <= new Date(Date.now())
+    ) {
+      return res.status(400).send("Invalid date value");
+    }
+  }
+
+  // Connect to target DB
+  const dbClient = await mongoClient
+    .connect(url, { useUnifiedTopology: true })
+    .catch((err) => {
+      res.status(400).send(err);
+    });
+  if (!dbClient) return res.status(500).end("Database cannot be connected");
+
+  // Try to update the username's field with the new value in the given collection
+  const dbObj = dbClient.db(db);
+  const query =
+    collection === "central"
+      ? { username: username, serviceCollection: serviceCollection }
+      : { _id: username };
+  const newValObj = { $set: { field: newVal } };
+  const result = await dbObj
+    .collection(collection)
+    .updateOne(query, newValObj)
+    .catch((err) => {
+      res.status(400).send(err);
+    });
+  if (!result) return res.status(500).end("Errors in Database");
+
+  dbClient.close();
+  return res.send(
+    `${username}'s ${field} record in ${collection} has been successfully updated to '${newVal}'!`
+  );
+});
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}!`);
 });
