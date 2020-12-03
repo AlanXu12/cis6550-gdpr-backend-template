@@ -316,6 +316,55 @@ app.patch("/record", jsonParser, async (req, res) => {
   );
 });
 
+// Handler for deleting all info belongs to one user within a specific collection
+app.delete("/record", jsonParser, async (req, res) => {
+  // Get all params from query
+  const db = req.body.db;
+  const collection = req.body.collection;
+  const username = req.body.username;
+  if (collection === "central") {
+    return res
+      .status(400)
+      .send("Cannot directly delete records from central collection.");
+  }
+
+  // Connect to target DB
+  const dbClient = await mongoClient
+    .connect(url, { useUnifiedTopology: true })
+    .catch((err) => {
+      res.status(400).send(err);
+    });
+  if (!dbClient) return res.status(500).end("Database cannot be connected");
+
+  // Try to delete the username's whole document in the given collection
+  const dbObj = dbClient.db(db);
+  const query = { _id: username };
+  const result = await dbObj
+    .collection(collection)
+    .deleteOne(query)
+    .catch((err) => {
+      res.status(400).send(err);
+    });
+  if (!result) return res.status(500).end("Errors in Database");
+  if (result["deletedCount"] === 0) return res.status(400).end("No deletion");
+
+  // Try to delete the username's corresponding record in the central collection
+  const centralCollection = "central";
+  const centralQuery = { username: username, serviceCollection: collection };
+  const centralRes = await dbObj
+    .collection(centralCollection)
+    .deleteOne(centralQuery)
+    .catch((err) => {
+      res.status(400).send(err);
+    });
+  if (!centralRes) return res.status(500).end("Errors in Database");
+  if (result["deletedCount"] === 0) return res.status(400).end("No deletion");
+
+  return res.send(
+    `${username}'s document in ${collection} has been successfully deleted!`
+  );
+});
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}!`);
 });
