@@ -42,9 +42,9 @@ app.post("/record", jsonParser, async (req, res) => {
   const dbClient = await mongoClient
     .connect(url, { useUnifiedTopology: true })
     .catch((err) => {
-      res.status(400).send(err);
+      res.status(500).send(err);
     });
-  if (!dbClient) return res.status(500).end("Database cannot be connected");
+  if (!dbClient) return;
 
   // Try to insert the new record to the target collection
   const dbObj = dbClient.db(req.body.db);
@@ -52,9 +52,9 @@ app.post("/record", jsonParser, async (req, res) => {
     .collection(req.body.collection)
     .insertOne(recordObj)
     .catch((err) => {
-      res.status(400).send(err);
+      res.status(500).send(err);
     });
-  if (!result) return res.status(500).end("Errors in Database");
+  if (!result) return;
 
   // Try to insert a new record to central collection b/c new record added to target collection
   const recordCentralObj = {
@@ -66,9 +66,10 @@ app.post("/record", jsonParser, async (req, res) => {
     .collection("central")
     .insertOne(recordCentralObj)
     .catch((error) => {
-      res.status(400).send(err);
+      res.status(500).send(err);
     });
-  if (!resultCentral) return res.status(500).end("Errors in Database");
+  if (!resultCentral) return;
+
   dbClient.close();
   return res.end("1 record inserted");
 });
@@ -84,9 +85,9 @@ app.get("/record", async (req, res) => {
   const dbClient = await mongoClient
     .connect(url, { useUnifiedTopology: true })
     .catch((err) => {
-      res.status(400).send(err);
+      res.status(500).send(err);
     });
-  if (!dbClient) return res.status(500).end("Database cannot be connected");
+  if (!dbClient) return;
 
   // Try to get the record correponing to the username in the target collection
   const dbObj = dbClient.db(db);
@@ -97,9 +98,9 @@ app.get("/record", async (req, res) => {
     .find(query)
     .toArray()
     .catch((err) => {
-      res.status(400).send(err);
+      res.status(500).send(err);
     });
-  if (!result) return res.status(500).end("Errors in Database");
+  if (!result) return;
   dbClient.close();
   return res.send(result);
 });
@@ -115,9 +116,9 @@ app.get("/record/all", async (req, res) => {
   const dbClient = await mongoClient
     .connect(url, { useUnifiedTopology: true })
     .catch((err) => {
-      res.status(400).send(err);
+      res.status(500).send(err);
     });
-  if (!dbClient) return res.status(500).end("Database cannot be connected");
+  if (!dbClient) return;
 
   // Try to get all collections that contains the username from central collection
   const dbObj = dbClient.db(db);
@@ -130,9 +131,9 @@ app.get("/record/all", async (req, res) => {
     .find(query, options)
     .toArray()
     .catch((err) => {
-      res.status(400).send(err);
+      res.status(500).send(err);
     });
-  if (!result) return res.status(500).end("Errors in Database");
+  if (!result) return;
 
   // Try to get all info of the user from the collection name list
   let allInfo = {};
@@ -145,9 +146,9 @@ app.get("/record/all", async (req, res) => {
       .find(idQuery, idOptions)
       .toArray()
       .catch((err) => {
-        res.status(400).send(err);
+        res.status(500).send(err);
       });
-    if (!info) return res.status(500).end("Errors in Database");
+    if (!info) return;
     console.log("info:", info);
     info.forEach((i) => {
       for (key in i) {
@@ -183,9 +184,9 @@ app.get("/contact/expire", async (req, res) => {
   const dbClient = await mongoClient
     .connect(url, { useUnifiedTopology: true })
     .catch((err) => {
-      res.status(400).send(err);
+      res.status(500).send(err);
     });
-  if (!dbClient) return res.status(500).end("Database cannot be connected");
+  if (!dbClient) return;
 
   // Try to get the record correponing to the username in the target collection
   const dbObj = dbClient.db("gdpr-s1");
@@ -197,9 +198,9 @@ app.get("/contact/expire", async (req, res) => {
     .find(query, options)
     .toArray()
     .catch((err) => {
-      res.status(400).send(err);
+      res.status(500).send(err);
     });
-  if (!result) return res.status(500).end("Errors in Database");
+  if (!result) return;
 
   // Loop through the result list and get contact info of each user from profile collection
   let contactInfo = {};
@@ -212,9 +213,9 @@ app.get("/contact/expire", async (req, res) => {
       .find(idQuery, idOptions)
       .toArray()
       .catch((err) => {
-        res.status(400).send(err);
+        res.status(500).send(err);
       });
-    if (!info) return res.status(500).end("Errors in Database");
+    if (!info) return;
     console.log("info:", info);
     result[index]["email"] = info[0]["email"];
   }
@@ -241,9 +242,9 @@ app.get("/record/query", async (req, res) => {
   const dbClient = await mongoClient
     .connect(url, { useUnifiedTopology: true })
     .catch((err) => {
-      res.status(400).send(err);
+      res.status(500).send(err);
     });
-  if (!dbClient) return res.status(500).end("Database cannot be connected");
+  if (!dbClient) return;
 
   // Try to get all collections that contains the username from central collection
   const dbObj = dbClient.db(db);
@@ -252,9 +253,9 @@ app.get("/record/query", async (req, res) => {
     .find(query, options)
     .toArray()
     .catch((err) => {
-      res.status(400).send(err);
+      res.status(500).send(err);
     });
-  if (!result) return res.status(500).end("Errors in Database");
+  if (!result) return;
 
   dbClient.close();
   return res.send(result);
@@ -291,9 +292,9 @@ app.patch("/record", jsonParser, async (req, res) => {
   const dbClient = await mongoClient
     .connect(url, { useUnifiedTopology: true })
     .catch((err) => {
-      res.status(400).send(err);
+      res.status(500).send(err);
     });
-  if (!dbClient) return res.status(500).end("Database cannot be connected");
+  if (!dbClient) return;
 
   // Try to update the username's field with the new value in the given collection
   const dbObj = dbClient.db(db);
@@ -306,9 +307,9 @@ app.patch("/record", jsonParser, async (req, res) => {
     .collection(collection)
     .updateOne(query, newValObj)
     .catch((err) => {
-      res.status(400).send(err);
+      res.status(500).send(err);
     });
-  if (!result) return res.status(500).end("Errors in Database");
+  if (!result) return;
   if (result["modifiedCount"] === 0) return res.status(400).end("No update");
 
   dbClient.close();
@@ -333,9 +334,9 @@ app.delete("/record", jsonParser, async (req, res) => {
   const dbClient = await mongoClient
     .connect(url, { useUnifiedTopology: true })
     .catch((err) => {
-      res.status(400).send(err);
+      res.status(500).send(err);
     });
-  if (!dbClient) return res.status(500).end("Database cannot be connected");
+  if (!dbClient) return;
 
   // Try to delete the username's whole document in the given collection
   const dbObj = dbClient.db(db);
@@ -344,9 +345,9 @@ app.delete("/record", jsonParser, async (req, res) => {
     .collection(collection)
     .deleteOne(query)
     .catch((err) => {
-      res.status(400).send(err);
+      res.status(500).send(err);
     });
-  if (!result) return res.status(500).end("Errors in Database");
+  if (!result) return;
   if (result["deletedCount"] === 0) return res.status(400).end("No deletion");
 
   // Try to delete the username's corresponding record in the central collection
@@ -356,14 +357,79 @@ app.delete("/record", jsonParser, async (req, res) => {
     .collection(centralCollection)
     .deleteOne(centralQuery)
     .catch((err) => {
-      res.status(400).send(err);
+      res.status(500).send(err);
     });
-  if (!centralRes) return res.status(500).end("Errors in Database");
+  if (!centralRes) return;
   if (result["deletedCount"] === 0) return res.status(400).end("No deletion");
 
   dbClient.close();
   return res.send(
     `${username}'s document in ${collection} has been successfully deleted!`
+  );
+});
+
+// Handler for deleting all info belongs to one user
+app.delete("/record/all", jsonParser, async (req, res) => {
+  // Get all params from query
+  const db = req.body.db;
+  const username = req.body.username;
+
+  // Connect to target DB
+  const dbClient = await mongoClient
+    .connect(url, { useUnifiedTopology: true })
+    .catch((err) => {
+      res.status(500).send(err);
+    });
+  if (!dbClient) return;
+
+  // Try to get all collections that contains the username from central collection
+  const dbObj = dbClient.db(db);
+  const query = { username: username };
+  const options = {
+    projection: { _id: 0, serviceCollection: 1 },
+  };
+  const result = await dbObj
+    .collection("central")
+    .find(query, options)
+    .toArray()
+    .catch((err) => {
+      res.status(500).send(err);
+    });
+  if (!result) return;
+  if (result.length === 0) return res.status(400).end("Wrong user");
+
+  // Try to go through the result collection list and delete the user's documents one-by-one
+  let deletedCollectionList = [];
+  const idQuery = { _id: username };
+  for (let index = 0; index < result.length; index++) {
+    let collection = result[index]["serviceCollection"];
+    let deleteRes = await dbObj
+      .collection(collection)
+      .deleteOne(idQuery)
+      .catch((err) => {
+        res.status(500).send(err);
+      });
+    if (!deleteRes) return;
+    if (deleteRes["deletedCount"] !== 0) deletedCollectionList.push(collection);
+  }
+
+  // Try to delete the username's corresponding record in the central collection
+  const centralCollection = "central";
+  for (let index = 0; index < result.length; index++) {
+    let collection = result[index]["serviceCollection"];
+    let centralQuery = { username: username, serviceCollection: collection };
+    let centralRes = await dbObj
+      .collection(centralCollection)
+      .deleteOne(centralQuery)
+      .catch((err) => {
+        res.status(500).send(err);
+      });
+    if (!centralRes) return;
+  }
+
+  dbClient.close();
+  return res.send(
+    `${username}'s document in [${deletedCollectionList.join()}] has been successfully deleted!`
   );
 });
 
