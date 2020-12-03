@@ -309,6 +309,7 @@ app.patch("/record", jsonParser, async (req, res) => {
       res.status(400).send(err);
     });
   if (!result) return res.status(500).end("Errors in Database");
+  if (result["modifiedCount"] === 0) return res.status(400).end("No update");
 
   dbClient.close();
   return res.send(
@@ -360,6 +361,7 @@ app.delete("/record", jsonParser, async (req, res) => {
   if (!centralRes) return res.status(500).end("Errors in Database");
   if (result["deletedCount"] === 0) return res.status(400).end("No deletion");
 
+  dbClient.close();
   return res.send(
     `${username}'s document in ${collection} has been successfully deleted!`
   );
