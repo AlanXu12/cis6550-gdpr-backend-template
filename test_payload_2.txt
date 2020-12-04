@@ -107,7 +107,24 @@ localhost:9000/record
 {
     "db": "gdpr-s2",
     "collection": "height-research",
+    "userId": "samZhu"
+}
+
+======================= GET =======================
+localhost:9000/record/query
+
+----------------------- query -----------------------
+::::: height-research :::::
+{
+    "db": "gdpr-s2",
+    "collection": "height-research",
     "query": { "footSize": "US 9.5" }
+}
+
+{
+    "db": "gdpr-s2",
+    "collection": "height-research",
+    "query": { }
 }
 
 ======================= PATCH =======================

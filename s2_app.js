@@ -97,6 +97,37 @@ app.post("/record", jsonParser, async (req, res) => {
     return res.end("1 record inserted");
 });
 
+// Handler for adding new record to service collection
+app.get("/record", async (req, res) => {
+    // Get all params from query
+    let userId = req.query.userId;
+    let db = req.query.db;
+    let collection = req.query.collection;
+
+    // Connect to target DB
+    const dbClient = await mongoClient
+        .connect(url, { useUnifiedTopology: true })
+        .catch((err) => {
+            res.status(500).send(err);
+        });
+    if (!dbClient) return;
+
+    // Try to get the record correponing to the userId in the target collection
+    const dbObj = dbClient.db(db);
+    const query =
+        collection === "central" ? { userId: userId } : { _id: userId };
+    const result = await dbObj
+        .collection(collection)
+        .find(query)
+        .toArray()
+        .catch((err) => {
+            res.status(500).send(err);
+        });
+    if (!result) return;
+    dbClient.close();
+    return res.send(result);
+});
+
 // Hanlder for executing DB queries for internal usage
 app.get("/record/query", async (req, res) => {
     // Get all params from query
