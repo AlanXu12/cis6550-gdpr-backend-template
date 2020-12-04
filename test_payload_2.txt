@@ -122,6 +122,15 @@ localhost:9000/record
 }
 
 ======================= DELETE =======================
+localhost:9000/record
+
+{
+    "db": "gdpr-s2",
+    "userId": "test1",
+    "collection": "height-research"
+}
+
+======================= DELETE =======================
 localhost:9000/record/all
 
 ----------------------- body -----------------------
