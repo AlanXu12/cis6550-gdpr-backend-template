@@ -74,6 +74,128 @@ app.post("/record", jsonParser, async (req, res) => {
     return res.end("1 record inserted");
 });
 
+// Handler for updating data stored in a collection
+app.patch("/record", jsonParser, async (req, res) => {
+    // Get all params from query
+    const db = req.body.db;
+    const collection = req.body.collection;
+    const userId = req.body.userId;
+    const serviceCollection = req.body.serviceCollection;
+    const field = req.body.field;
+    let newVal = req.body.newVal;
+    // Validate the query params values
+    if (collection === "central") {
+        if (!serviceCollection || field !== "consentExp") {
+            return res
+                .status(400)
+                .send(
+                    "serviceCollection cannot be empty and only consentExp can be udpated if modifying data in central collection"
+                );
+        }
+        newVal = new Date(newVal);
+        if (
+            !(newVal instanceof Date && !isNaN(newVal)) ||
+            newVal <= new Date(Date.now())
+        ) {
+            return res.status(400).send("Invalid date value");
+        }
+    }
+
+    // Connect to target DB
+    const dbClient = await mongoClient
+        .connect(url, { useUnifiedTopology: true })
+        .catch((err) => {
+            res.status(500).send(err);
+        });
+    if (!dbClient) return;
+
+    // Try to update the userId's field with the new value in the given collection
+    const dbObj = dbClient.db(db);
+    const query =
+        collection === "central"
+            ? { userId: userId, serviceCollection: serviceCollection }
+            : { _id: userId };
+    const newValObj = { $set: { field: newVal } };
+    const result = await dbObj
+        .collection(collection)
+        .updateOne(query, newValObj)
+        .catch((err) => {
+            res.status(500).send(err);
+        });
+    if (!result) return;
+    if (result["modifiedCount"] === 0) return res.status(400).end("No update");
+
+    dbClient.close();
+    return res.send(
+        `${userId}'s ${field} record in ${collection} has been successfully updated to '${newVal}'!`
+    );
+});
+
+// Handler for deleting all info belongs to one user
+app.delete("/record/all", jsonParser, async (req, res) => {
+    // Get all params from query
+    const db = req.body.db;
+    const userId = req.body.userId;
+
+    // Connect to target DB
+    const dbClient = await mongoClient
+        .connect(url, { useUnifiedTopology: true })
+        .catch((err) => {
+            res.status(500).send(err);
+        });
+    if (!dbClient) return;
+
+    // Try to get all collections that contains the userId from central collection
+    const dbObj = dbClient.db(db);
+    const query = { userId: userId };
+    const options = {
+        projection: { _id: 0, serviceCollection: 1 },
+    };
+    const result = await dbObj
+        .collection("central")
+        .find(query, options)
+        .toArray()
+        .catch((err) => {
+            res.status(500).send(err);
+        });
+    if (!result) return;
+    if (result.length === 0) return res.status(400).end("Wrong user");
+
+    // Try to go through the result collection list and delete the user's documents one-by-one
+    let deletedCollectionList = [];
+    const idQuery = { _id: userId };
+    for (let index = 0; index < result.length; index++) {
+        let collection = result[index]["serviceCollection"];
+        let deleteRes = await dbObj
+            .collection(collection)
+            .deleteOne(idQuery)
+            .catch((err) => {
+                res.status(500).send(err);
+            });
+        if (!deleteRes) return;
+        if (deleteRes["deletedCount"] !== 0) deletedCollectionList.push(collection);
+    }
+
+    // Try to delete the userId's corresponding record in the central collection
+    const centralCollection = "central";
+    for (let index = 0; index < result.length; index++) {
+        let collection = result[index]["serviceCollection"];
+        let centralQuery = { userId: userId, serviceCollection: collection };
+        let centralRes = await dbObj
+            .collection(centralCollection)
+            .deleteOne(centralQuery)
+            .catch((err) => {
+                res.status(500).send(err);
+            });
+        if (!centralRes) return;
+    }
+
+    dbClient.close();
+    return res.send(
+        `${userId}'s document in [${deletedCollectionList.join()}] has been successfully deleted!`
+    );
+});
+
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}!`);
 });
