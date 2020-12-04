@@ -19,24 +19,27 @@ let url =
 
 // Handler for adding new record to service collection
 app.post("/record", jsonParser, async (req, res) => {
+  // Get all params from query
+  const db = req.body.db;
+  const collection = req.body.collection;
+  const consentExp = req.body.consentExp;
+  const username = req.body.username;
+  let recordObj = req.body.record;
+
   // Check if consent is included and valid
-  if (
-    !req.body.consentExp ||
-    new Date(req.body.consentExp) <= new Date(Date.now())
-  ) {
+  if (!consentExp || new Date(consentExp) <= new Date(Date.now())) {
     return res.status(400).end("No/invalid consent expire date");
   }
   // Check if username is included
-  if (!req.body.username) return res.status(400).end("No username");
+  if (!username) return res.status(400).end("No username");
   // Convert all json element starts with "date" to Date obj
-  let recordObj = req.body.record;
   for (rec in recordObj) {
     if (rec.startsWith("date")) {
       recordObj[rec] = new Date(recordObj[rec]);
     }
   }
   // Use username as the unique identifier
-  recordObj._id = req.body.username;
+  recordObj._id = username;
 
   // Connect to target DB
   const dbClient = await mongoClient
@@ -46,10 +49,30 @@ app.post("/record", jsonParser, async (req, res) => {
     });
   if (!dbClient) return;
 
+  const dbObj = dbClient.db(db);
+  // Check if target collection exists
+  let collectionList = await dbObj
+    .listCollections()
+    .toArray()
+    .catch((err) => {
+      res.status(500).send(err);
+    });
+  if (!collectionList) return;
+  collectionList = collectionList.map((c) => {
+    return c["name"];
+  });
+  console.log("collectionList:", collectionList);
+  console.log(
+    "!collectionList.includes(collection):",
+    !collectionList.includes(collection)
+  );
+  if (!collectionList.includes(collection)) {
+    return res.status(400).end("No/invalid collection");
+  }
+
   // Try to insert the new record to the target collection
-  const dbObj = dbClient.db(req.body.db);
   const result = await dbObj
-    .collection(req.body.collection)
+    .collection(collection)
     .insertOne(recordObj)
     .catch((err) => {
       res.status(500).send(err);
@@ -296,13 +319,28 @@ app.patch("/record", jsonParser, async (req, res) => {
     });
   if (!dbClient) return;
 
-  // Try to update the username's field with the new value in the given collection
   const dbObj = dbClient.db(db);
+  // Check if target field name exists
+  if (collection !== "central") {
+    let targetDocument = await dbObj
+      .collection(collection)
+      .findOne({ _id: username })
+      .catch((err) => {
+        res.status(500).send(err);
+      });
+    if (!targetDocument) return;
+    const fieldList = Object.keys(targetDocument);
+    if (!fieldList.includes(field)) {
+      return res.status(400).end("No/invalid field");
+    }
+  }
+
+  // Try to update the username's field with the new value in the given collection
   const query =
     collection === "central"
       ? { username: username, serviceCollection: serviceCollection }
       : { _id: username };
-  const newValObj = { $set: { field: newVal } };
+  const newValObj = { $set: { [field]: newVal } };
   const result = await dbObj
     .collection(collection)
     .updateOne(query, newValObj)
