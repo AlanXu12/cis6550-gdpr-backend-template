@@ -19,24 +19,27 @@ let url =
 
 // Handler for adding new record to service collection
 app.post("/record", jsonParser, async (req, res) => {
+    // Get all params from query
+    const db = req.body.db;
+    const collection = req.body.collection;
+    const consentExp = req.body.consentExp;
+    const userId = req.body.userId;
+    let recordObj = req.body.record;
+
     // Check if consent is included and valid
-    if (
-        !req.body.consentExp ||
-        new Date(req.body.consentExp) <= new Date(Date.now())
-    ) {
+    if (!consentExp || new Date(consentExp) <= new Date(Date.now())) {
         return res.status(400).end("No/invalid consent expire date");
     }
     // Check if userId is included
-    if (!req.body.userId) return res.status(400).end("No userId");
+    if (!userId) return res.status(400).end("No userId");
     // Convert all json element starts with "date" to Date obj
-    let recordObj = req.body.record;
     for (rec in recordObj) {
         if (rec.startsWith("date")) {
             recordObj[rec] = new Date(recordObj[rec]);
         }
     }
     // Use userId as the unique identifier
-    recordObj._id = req.body.userId;
+    recordObj._id = userId;
 
     // Connect to target DB
     const dbClient = await mongoClient
@@ -46,10 +49,30 @@ app.post("/record", jsonParser, async (req, res) => {
         });
     if (!dbClient) return;
 
+    const dbObj = dbClient.db(db);
+    // Check if target collection exists
+    let collectionList = await dbObj
+        .listCollections()
+        .toArray()
+        .catch((err) => {
+            res.status(500).send(err);
+        });
+    if (!collectionList) return;
+    collectionList = collectionList.map((c) => {
+        return c["name"];
+    });
+    console.log("collectionList:", collectionList);
+    console.log(
+        "!collectionList.includes(collection):",
+        !collectionList.includes(collection)
+    );
+    if (!collectionList.includes(collection)) {
+        return res.status(400).end("No/invalid collection");
+    }
+
     // Try to insert the new record to the target collection
-    const dbObj = dbClient.db(req.body.db);
     const result = await dbObj
-        .collection(req.body.collection)
+        .collection(collection)
         .insertOne(recordObj)
         .catch((err) => {
             res.status(500).send(err);
