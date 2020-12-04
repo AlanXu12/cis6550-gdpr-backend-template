@@ -1,0 +1,19 @@
+======================= POST =======================
+localhost:9000/record
+
+----------------------- body -----------------------
+::::: COVID-19-research :::::
+{
+    "db": "gdpr-s2",
+    "collection": "COVID-19-research",
+    "consentExp": "2020-12-20",
+    "userId": "test1",
+    "record": {
+        "firstName": "test1First",
+        "lastName": "test1Last",
+        "gender": "male",
+        "address": "test address1",
+        "email": "test1@testdomain.com",
+        "bloodType": "B"
+    }
+}
