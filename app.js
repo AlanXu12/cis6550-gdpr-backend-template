@@ -319,13 +319,28 @@ app.patch("/record", jsonParser, async (req, res) => {
     });
   if (!dbClient) return;
 
-  // Try to update the username's field with the new value in the given collection
   const dbObj = dbClient.db(db);
+  // Check if target field name exists
+  if (collection !== "central") {
+    let targetDocument = await dbObj
+      .collection(collection)
+      .findOne({ _id: username })
+      .catch((err) => {
+        res.status(500).send(err);
+      });
+    if (!targetDocument) return;
+    const fieldList = Object.keys(targetDocument);
+    if (!fieldList.includes(field)) {
+      return res.status(400).end("No/invalid field");
+    }
+  }
+
+  // Try to update the username's field with the new value in the given collection
   const query =
     collection === "central"
       ? { username: username, serviceCollection: serviceCollection }
       : { _id: username };
-  const newValObj = { $set: { field: newVal } };
+  const newValObj = { $set: { [field]: newVal } };
   const result = await dbObj
     .collection(collection)
     .updateOne(query, newValObj)
