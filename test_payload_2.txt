@@ -99,6 +99,17 @@ localhost:9000/record
     }
 }
 
+======================= GET =======================
+localhost:9000/record
+
+----------------------- query -----------------------
+::::: height-research :::::
+{
+    "db": "gdpr-s2",
+    "collection": "height-research",
+    "query": { "footSize": "US 9.5" }
+}
+
 ======================= PATCH =======================
 localhost:9000/record
 
@@ -107,7 +118,7 @@ localhost:9000/record
 {
     "db": "gdpr-s2",
     "collection": "height-research",
-    "userId": "test1",
+    "userId": "samZhu",
     "field": "footSize",
     "newVal": "US 9.5"
 }
@@ -115,7 +126,7 @@ localhost:9000/record
 {
     "db": "gdpr-s2",
     "collection": "central",
-    "userId": "test1",
+    "userId": "samZhu",
     "serviceCollection": "COVID-19-researh",
     "field": "consentExp",
     "newVal": "2022-12-12"

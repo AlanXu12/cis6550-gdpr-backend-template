@@ -74,6 +74,43 @@ app.post("/record", jsonParser, async (req, res) => {
     return res.end("1 record inserted");
 });
 
+// Hanlder for executing DB queries for internal usage
+app.get("/record/query", async (req, res) => {
+    // Get all params from query
+    const db = req.query.db;
+    const collection = req.query.collection;
+    let query;
+    let options;
+    try {
+        query = JSON.parse(req.query.query);
+        options = req.query.options ? JSON.parse(req.query.options) : {};
+    } catch (error) {
+        return res.status(400).end("Errors in query/options value");
+    }
+
+    // Connect to target DB
+    const dbClient = await mongoClient
+        .connect(url, { useUnifiedTopology: true })
+        .catch((err) => {
+            res.status(500).send(err);
+        });
+    if (!dbClient) return;
+
+    // Try to get all collections that contains the userId from central collection
+    const dbObj = dbClient.db(db);
+    const result = await dbObj
+        .collection(collection)
+        .find(query, options)
+        .toArray()
+        .catch((err) => {
+            res.status(500).send(err);
+        });
+    if (!result) return;
+
+    dbClient.close();
+    return res.send(result);
+});
+
 // Handler for updating data stored in a collection
 app.patch("/record", jsonParser, async (req, res) => {
     // Get all params from query
@@ -109,13 +146,28 @@ app.patch("/record", jsonParser, async (req, res) => {
         });
     if (!dbClient) return;
 
-    // Try to update the userId's field with the new value in the given collection
     const dbObj = dbClient.db(db);
+    // Check if target field name exists
+    if (collection !== "central") {
+        let targetDocument = await dbObj
+            .collection(collection)
+            .findOne({ _id: userId })
+            .catch((err) => {
+                res.status(500).send(err);
+            });
+        if (!targetDocument) return;
+        const fieldList = Object.keys(targetDocument);
+        if (!fieldList.includes(field)) {
+            return res.status(400).end("No/invalid field");
+        }
+    }
+
+    // Try to update the userId's field with the new value in the given collection
     const query =
         collection === "central"
             ? { userId: userId, serviceCollection: serviceCollection }
             : { _id: userId };
-    const newValObj = { $set: { field: newVal } };
+    const newValObj = { $set: { [field]: newVal } };
     const result = await dbObj
         .collection(collection)
         .updateOne(query, newValObj)
