@@ -6,6 +6,7 @@ localhost:8000/record
 {
     "db": "gdpr-s1",
     "collection": "profile",
+    "email": "test1@testdomain.com",
     "consentExp": "2020-12-20",
     "username": "test6",
     "record": {
@@ -22,6 +23,7 @@ localhost:8000/record
 {
     "db": "gdpr-s1",
     "collection": "cellphone",
+    "email": "test1@testdomain.com",
     "consentExp": "2020-11-20",
     "username": "kyle",
     "record": {
