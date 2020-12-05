@@ -128,6 +128,72 @@ app.get("/record", async (req, res) => {
     return res.send(result);
 });
 
+// Handler for getting all data of one user
+app.get("/record/all", async (req, res) => {
+    // Get all params from query
+    let userId = req.query.userId;
+    let db = req.query.db;
+    let toDownload = req.query.toDownload === "true" || false;
+
+    // Connect to target DB
+    const dbClient = await mongoClient
+        .connect(url, { useUnifiedTopology: true })
+        .catch((err) => {
+            res.status(500).send(err);
+        });
+    if (!dbClient) return;
+
+    // Try to get all collections that contains the userId from central collection
+    const dbObj = dbClient.db(db);
+    const query = { userId: userId };
+    const options = {
+        projection: { _id: 0, serviceCollection: 1 },
+    };
+    const result = await dbObj
+        .collection("central")
+        .find(query, options)
+        .toArray()
+        .catch((err) => {
+            res.status(500).send(err);
+        });
+    if (!result) return;
+
+    // Try to get all info of the user from the collection name list
+    let allInfo = {};
+    const idQuery = { _id: userId };
+    const idOptions = { projection: { _id: 0 } };
+    for (let index = 0; index < result.length; index++) {
+        let collection = result[index]["serviceCollection"];
+        let info = await dbObj
+            .collection(collection)
+            .find(idQuery, idOptions)
+            .toArray()
+            .catch((err) => {
+                res.status(500).send(err);
+            });
+        if (!info) return;
+        console.log("info:", info);
+        info.forEach((i) => {
+            for (key in i) {
+                allInfo[key] = i[key];
+            }
+        });
+    }
+
+    dbClient.close();
+    // Determine whether the gathered info needs to be downloaded
+    if (!toDownload) {
+        return res.send(allInfo);
+    } else {
+        let json = JSON.stringify(allInfo);
+        let filename = "userInfo.json";
+        let mimetype = "application/json";
+        res.setHeader("Content-Type", mimetype);
+        res.setHeader("Content-disposition", "attachment; filename=" + filename);
+        return res.send(json);
+    }
+});
+
 // Hanlder for executing DB queries for internal usage
 app.get("/record/query", async (req, res) => {
     // Get all params from query
