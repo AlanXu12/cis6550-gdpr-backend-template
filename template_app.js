@@ -14,8 +14,8 @@ const port = 8000;
 // MongoDB instance
 let mongo = require("mongodb");
 let mongoClient = mongo.MongoClient;
-let url =
-  "mongodb+srv://pingfan:pingfan@cluster0.iwciw.mongodb.net/test?authSource=admin&replicaSet=atlas-m7bgyt-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true";
+// TODO: Uncomment and replace the username, password, and cluster-url of the MongoDB client
+// let url = "mongodb+srv://<user>:<password>@<cluster-url>";
 
 // Handler for adding new record to service collection
 app.post("/record", jsonParser, async (req, res) => {
@@ -23,8 +23,8 @@ app.post("/record", jsonParser, async (req, res) => {
   const db = req.body.db;
   const collection = req.body.collection;
   const consentExp = req.body.consentExp;
-  const username = req.body.username;
-  const email = req.body.email;
+  // TODO: Uncomment and replace the value for the unqiue identifier
+  // const uid = req.body.<unqiue identifier>;
   let recordObj = req.body.record;
 
   // Check if consent is included and valid
@@ -32,15 +32,16 @@ app.post("/record", jsonParser, async (req, res) => {
     return res.status(400).end("No/invalid consent expire date");
   }
   // Check if username is included
-  if (!username) return res.status(400).end("No username");
+  if (!uid) return res.status(400).end("No uid");
   // Convert all json element starts with "date" to Date obj
+  // TODO: Note that any record value needs to convert from str to Date has to start with "date" in variable name
   for (rec in recordObj) {
     if (rec.startsWith("date")) {
       recordObj[rec] = new Date(recordObj[rec]);
     }
   }
-  // Use username as the unique identifier
-  recordObj._id = username;
+  // Use <uid> as the unique identifier
+  recordObj._id = uid;
 
   // Connect to target DB
   const dbClient = await mongoClient
@@ -62,11 +63,6 @@ app.post("/record", jsonParser, async (req, res) => {
   collectionList = collectionList.map((c) => {
     return c["name"];
   });
-  console.log("collectionList:", collectionList);
-  console.log(
-    "!collectionList.includes(collection):",
-    !collectionList.includes(collection)
-  );
   if (!collectionList.includes(collection)) {
     return res.status(400).end("No/invalid collection");
   }
@@ -82,9 +78,8 @@ app.post("/record", jsonParser, async (req, res) => {
 
   // Try to insert a new record to central collection b/c new record added to target collection
   const recordCentralObj = {
-    username: username,
+    uid: uid,
     serviceCollection: collection,
-    email: email,
     consentExp: new Date(consentExp),
   };
   const resultCentral = await dbObj
@@ -102,9 +97,10 @@ app.post("/record", jsonParser, async (req, res) => {
 // Handler for adding new record to service collection
 app.get("/record", async (req, res) => {
   // Get all params from query
-  let username = req.query.username;
   let db = req.query.db;
   let collection = req.query.collection;
+  // TODO: Uncomment and replace the value for the unqiue identifier
+  // let uid = req.body.<unqiue identifier>;
 
   // Connect to target DB
   const dbClient = await mongoClient
@@ -116,8 +112,7 @@ app.get("/record", async (req, res) => {
 
   // Try to get the record correponing to the username in the target collection
   const dbObj = dbClient.db(db);
-  const query =
-    collection === "central" ? { username: username } : { _id: username };
+  const query = collection === "central" ? { uid: uid } : { _id: uid };
   const result = await dbObj
     .collection(collection)
     .find(query)
@@ -133,9 +128,10 @@ app.get("/record", async (req, res) => {
 // Handler for getting all data of one user
 app.get("/record/all", async (req, res) => {
   // Get all params from query
-  let username = req.query.username;
   let db = req.query.db;
   let toDownload = req.query.toDownload === "true" || false;
+  // TODO: Uncomment and replace the value for the unqiue identifier
+  // const uid = req.body.<unqiue identifier>;
 
   // Connect to target DB
   const dbClient = await mongoClient
@@ -147,7 +143,7 @@ app.get("/record/all", async (req, res) => {
 
   // Try to get all collections that contains the username from central collection
   const dbObj = dbClient.db(db);
-  const query = { username: username };
+  const query = { uid: uid };
   const options = {
     projection: { _id: 0, serviceCollection: 1 },
   };
@@ -162,7 +158,7 @@ app.get("/record/all", async (req, res) => {
 
   // Try to get all info of the user from the collection name list
   let allInfo = {};
-  const idQuery = { _id: username };
+  const idQuery = { _id: uid };
   const idOptions = { projection: { _id: 0 } };
   for (let index = 0; index < result.length; index++) {
     let collection = result[index]["serviceCollection"];
@@ -174,7 +170,6 @@ app.get("/record/all", async (req, res) => {
         res.status(500).send(err);
       });
     if (!info) return;
-    console.log("info:", info);
     info.forEach((i) => {
       for (key in i) {
         allInfo[key] = i[key];
@@ -203,8 +198,6 @@ app.get("/contact/expire", async (req, res) => {
   let expireInDays = parseInt(req.query.expireInDays);
   let targetExpireDate = new Date(Date.now());
   targetExpireDate.setDate(targetExpireDate.getDate() + expireInDays);
-  console.log("expireInDays:", expireInDays, typeof expireInDays);
-  console.log("targetExpireDate:", targetExpireDate);
 
   // Connect to target DB
   const dbClient = await mongoClient
@@ -274,7 +267,8 @@ app.patch("/record", jsonParser, async (req, res) => {
   // Get all params from query
   const db = req.body.db;
   const collection = req.body.collection;
-  const username = req.body.username;
+  // TODO: Uncomment and replace the value for the unqiue identifier
+  // const uid = req.body.<unqiue identifier>;
   const serviceCollection = req.body.serviceCollection;
   const field = req.body.field;
   let newVal = req.body.newVal;
@@ -309,7 +303,7 @@ app.patch("/record", jsonParser, async (req, res) => {
   if (collection !== "central") {
     let targetDocument = await dbObj
       .collection(collection)
-      .findOne({ _id: username })
+      .findOne({ _id: uid })
       .catch((err) => {
         res.status(500).send(err);
       });
@@ -323,8 +317,8 @@ app.patch("/record", jsonParser, async (req, res) => {
   // Try to update the username's field with the new value in the given collection
   const query =
     collection === "central"
-      ? { username: username, serviceCollection: serviceCollection }
-      : { _id: username };
+      ? { uid: uid, serviceCollection: serviceCollection }
+      : { _id: uid };
   const newValObj = { $set: { [field]: newVal } };
   const result = await dbObj
     .collection(collection)
@@ -346,7 +340,8 @@ app.delete("/record", jsonParser, async (req, res) => {
   // Get all params from query
   const db = req.body.db;
   const collection = req.body.collection;
-  const username = req.body.username;
+  // TODO: Uncomment and replace the value for the unqiue identifier
+  // const uid = req.body.<unqiue identifier>;
   if (collection === "central") {
     return res
       .status(400)
@@ -363,7 +358,7 @@ app.delete("/record", jsonParser, async (req, res) => {
 
   // Try to delete the username's whole document in the given collection
   const dbObj = dbClient.db(db);
-  const query = { _id: username };
+  const query = { _id: uid };
   const result = await dbObj
     .collection(collection)
     .deleteOne(query)
@@ -373,9 +368,9 @@ app.delete("/record", jsonParser, async (req, res) => {
   if (!result) return;
   if (result["deletedCount"] === 0) return res.status(400).end("No deletion");
 
-  // Try to delete the username's corresponding record in the central collection
+  // Try to delete the uid's corresponding record in the central collection
   const centralCollection = "central";
-  const centralQuery = { username: username, serviceCollection: collection };
+  const centralQuery = { uid: uid, serviceCollection: collection };
   const centralRes = await dbObj
     .collection(centralCollection)
     .deleteOne(centralQuery)
@@ -387,7 +382,7 @@ app.delete("/record", jsonParser, async (req, res) => {
 
   dbClient.close();
   return res.send(
-    `${username}'s document in ${collection} has been successfully deleted!`
+    `${uid}'s document in ${collection} has been successfully deleted!`
   );
 });
 
@@ -395,7 +390,8 @@ app.delete("/record", jsonParser, async (req, res) => {
 app.delete("/record/all", jsonParser, async (req, res) => {
   // Get all params from query
   const db = req.body.db;
-  const username = req.body.username;
+  // TODO: Uncomment and replace the value for the unqiue identifier
+  // const uid = req.body.<unqiue identifier>;
 
   // Connect to target DB
   const dbClient = await mongoClient
@@ -407,7 +403,7 @@ app.delete("/record/all", jsonParser, async (req, res) => {
 
   // Try to get all collections that contains the username from central collection
   const dbObj = dbClient.db(db);
-  const query = { username: username };
+  const query = { uid: uid };
   const options = {
     projection: { _id: 0, serviceCollection: 1 },
   };
@@ -423,7 +419,7 @@ app.delete("/record/all", jsonParser, async (req, res) => {
 
   // Try to go through the result collection list and delete the user's documents one-by-one
   let deletedCollectionList = [];
-  const idQuery = { _id: username };
+  const idQuery = { _id: uid };
   for (let index = 0; index < result.length; index++) {
     let collection = result[index]["serviceCollection"];
     let deleteRes = await dbObj
@@ -436,11 +432,11 @@ app.delete("/record/all", jsonParser, async (req, res) => {
     if (deleteRes["deletedCount"] !== 0) deletedCollectionList.push(collection);
   }
 
-  // Try to delete the username's corresponding record in the central collection
+  // Try to delete the uid's corresponding record in the central collection
   const centralCollection = "central";
   for (let index = 0; index < result.length; index++) {
     let collection = result[index]["serviceCollection"];
-    let centralQuery = { username: username, serviceCollection: collection };
+    let centralQuery = { uid: uid, serviceCollection: collection };
     let centralRes = await dbObj
       .collection(centralCollection)
       .deleteOne(centralQuery)
@@ -452,10 +448,10 @@ app.delete("/record/all", jsonParser, async (req, res) => {
 
   dbClient.close();
   return res.send(
-    `${username}'s document in [${deletedCollectionList.join()}] has been successfully deleted!`
+    `${uid}'s document in [${deletedCollectionList.join()}] has been successfully deleted!`
   );
 });
 
 app.listen(port, () => {
-  console.log(`Scenario One app listening on port ${port}!`);
+  console.log(`Template app listening on port ${port}!`);
 });
