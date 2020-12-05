@@ -165,6 +165,58 @@ app.get("/record/query", async (req, res) => {
     return res.send(result);
 });
 
+// Hanlder for getting contact info whose data retention or consent will expire soon
+app.get("/contact/expire", async (req, res) => {
+    // Get all params from query and calculate the target expiring date based on the param
+    let expireInDays = parseInt(req.query.expireInDays);
+    let targetExpireDate = new Date(Date.now());
+    targetExpireDate.setDate(targetExpireDate.getDate() + expireInDays);
+    console.log("expireInDays:", expireInDays, typeof expireInDays);
+    console.log("targetExpireDate:", targetExpireDate);
+
+    // Connect to target DB
+    const dbClient = await mongoClient
+        .connect(url, { useUnifiedTopology: true })
+        .catch((err) => {
+            res.status(500).send(err);
+        });
+    if (!dbClient) return;
+
+    // Try to get the record correponing to the userId in the target collection
+    const dbObj = dbClient.db("gdpr-s2");
+    const collection = "central";
+    const query = { consentExp: { $lt: targetExpireDate } };
+    const options = { projection: { _id: 0, consentExp: 0 } };
+    const result = await dbObj
+        .collection(collection)
+        .find(query, options)
+        .toArray()
+        .catch((err) => {
+            res.status(500).send(err);
+        });
+    if (!result) return;
+
+    // Loop through the result list and get contact info of each user from profile collection
+    const idOptions = { projection: { _id: 0, email: 1 } };
+    for (let index = 0; index < result.length; index++) {
+        let collection = result[index]["serviceCollection"];
+        let idQuery = { _id: result[index]["userId"] };
+        let info = await dbObj
+            .collection(collection)
+            .find(idQuery, idOptions)
+            .toArray()
+            .catch((err) => {
+                res.status(500).send(err);
+            });
+        if (!info) return;
+        console.log("info:", info);
+        result[index]["email"] = info[0]["email"];
+    }
+
+    dbClient.close();
+    return res.send(result);
+});
+
 // Handler for updating data stored in a collection
 app.patch("/record", jsonParser, async (req, res) => {
     // Get all params from query

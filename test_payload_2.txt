@@ -127,6 +127,14 @@ localhost:9000/record/query
     "query": { }
 }
 
+======================= GET =======================
+localhost:9000/contact/expire
+
+----------------------- query -----------------------
+{
+    "expireInDays": "30"
+}
+
 ======================= PATCH =======================
 localhost:9000/record
 
