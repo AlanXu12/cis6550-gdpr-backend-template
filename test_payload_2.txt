@@ -22,6 +22,7 @@ localhost:9000/record
     "db": "gdpr-s2",
     "collection": "COVID-19-research",
     "consentExp": "2021-12-12",
+    "email": "samZhu@testdomain.com",
     "userId": "samZhu",
     "record": {
         "firstName": "Sam",
@@ -37,6 +38,7 @@ localhost:9000/record
     "db": "gdpr-s2",
     "collection": "sleeping-quality-research",
     "consentExp": "2020-12-20",
+    "email": "test1@testdomain.com",
     "userId": "test1",
     "record": {
         "firstName": "test1First",
@@ -52,6 +54,7 @@ localhost:9000/record
     "db": "gdpr-s2",
     "collection": "sleeping-quality-research",
     "consentExp": "2021-12-12",
+    "email": "samZhu@testdomain.com",
     "userId": "samZhu",
     "record": {
         "firstName": "Sam",
@@ -68,6 +71,7 @@ localhost:9000/record
     "db": "gdpr-s2",
     "collection": "height-research",
     "consentExp": "2020-12-20",
+    "email": "test1@testdomain.com",
     "userId": "test1",
     "record": {
         "firstName": "test1First",
@@ -83,6 +87,7 @@ localhost:9000/record
     "db": "gdpr-s2",
     "collection": "height-research",
     "consentExp": "2021-12-12",
+    "email": "samZhu@testdomain.com",
     "userId": "samZhu",
     "record": {
         "firstName": "Sam",
