@@ -62,11 +62,6 @@ app.post("/record", jsonParser, async (req, res) => {
   collectionList = collectionList.map((c) => {
     return c["name"];
   });
-  console.log("collectionList:", collectionList);
-  console.log(
-    "!collectionList.includes(collection):",
-    !collectionList.includes(collection)
-  );
   if (!collectionList.includes(collection)) {
     return res.status(400).end("No/invalid collection");
   }
@@ -114,7 +109,7 @@ app.get("/record", async (req, res) => {
     });
   if (!dbClient) return;
 
-  // Try to get the record correponing to the username in the target collection
+  // Try to get the record correponding to the username in the target collection
   const dbObj = dbClient.db(db);
   const query =
     collection === "central" ? { username: username } : { _id: username };
@@ -174,7 +169,6 @@ app.get("/record/all", async (req, res) => {
         res.status(500).send(err);
       });
     if (!info) return;
-    console.log("info:", info);
     info.forEach((i) => {
       for (key in i) {
         allInfo[key] = i[key];
@@ -203,8 +197,6 @@ app.get("/contact/expire", async (req, res) => {
   let expireInDays = parseInt(req.query.expireInDays);
   let targetExpireDate = new Date(Date.now());
   targetExpireDate.setDate(targetExpireDate.getDate() + expireInDays);
-  console.log("expireInDays:", expireInDays, typeof expireInDays);
-  console.log("targetExpireDate:", targetExpireDate);
 
   // Connect to target DB
   const dbClient = await mongoClient
