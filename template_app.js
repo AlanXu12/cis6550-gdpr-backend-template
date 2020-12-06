@@ -94,7 +94,7 @@ app.post("/record", jsonParser, async (req, res) => {
   return res.end("1 record inserted");
 });
 
-// Handler for adding new record to service collection
+// Handler for getting one user's record in a collection
 app.get("/record", async (req, res) => {
   // Get all params from query
   let db = req.query.db;
