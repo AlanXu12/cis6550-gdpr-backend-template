@@ -7,13 +7,13 @@ localhost:9000/record
     "db": "gdpr-s2",
     "collection": "COVID-19-research",
     "consentExp": "2020-12-20",
+    "email": "test1@testdomain.com",
     "userId": "test1",
     "record": {
         "firstName": "test1First",
         "lastName": "test1Last",
         "gender": "male",
         "address": "test address1",
-        "email": "test1@testdomain.com",
         "bloodType": "B"
     }
 }
@@ -28,7 +28,6 @@ localhost:9000/record
         "lastName": "Zhu",
         "gender": "male",
         "address": "Sam's address1",
-        "email": "samZhu@testdomain.com",
         "bloodType": "O"
     }
 }
@@ -44,7 +43,6 @@ localhost:9000/record
         "lastName": "test1Last",
         "gender": "male",
         "address": "test address1",
-        "email": "test1@testdomain.com",
         "hoursPerDay": "3",
         "sleeplessNightPerMonth": "8"
     }
@@ -60,7 +58,6 @@ localhost:9000/record
         "lastName": "Zhu",
         "gender": "male",
         "address": "Sam's address1",
-        "email": "samZhu@testdomain.com",
         "hoursPerDay": "2",
         "sleeplessNightPerMonth": "4"
     }
@@ -77,7 +74,6 @@ localhost:9000/record
         "lastName": "test1Last",
         "gender": "male",
         "address": "test address1",
-        "email": "test1@testdomain.com",
         "height": "178 cm",
         "footSize": "US 8.5"
     }
@@ -93,7 +89,6 @@ localhost:9000/record
         "lastName": "Zhu",
         "gender": "male",
         "address": "Sam's address1",
-        "email": "samZhu@testdomain.com",
         "height": "181 cm",
         "footSize": "US 95"
     }
@@ -142,6 +137,7 @@ localhost:9000/contact/expire
 
 ----------------------- query -----------------------
 {
+    "db": "gdpr-s2",
     "expireInDays": "30"
 }
 

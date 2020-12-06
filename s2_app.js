@@ -24,6 +24,7 @@ app.post("/record", jsonParser, async (req, res) => {
     const collection = req.body.collection;
     const consentExp = req.body.consentExp;
     const userId = req.body.userId;
+    const email = req.body.email;
     let recordObj = req.body.record;
 
     // Check if consent is included and valid
@@ -81,9 +82,10 @@ app.post("/record", jsonParser, async (req, res) => {
 
     // Try to insert a new record to central collection b/c new record added to target collection
     const recordCentralObj = {
-        userId: req.body.userId,
-        serviceCollection: req.body.collection,
-        consentExp: new Date(req.body.consentExp),
+        userId: userId,
+        serviceCollection: collection,
+        email: email,
+        consentExp: new Date(consentExp),
     };
     const resultCentral = await dbObj
         .collection("central")
@@ -216,7 +218,7 @@ app.get("/record/query", async (req, res) => {
         });
     if (!dbClient) return;
 
-    // Try to get all collections that contains the userId from central collection
+    // // Try to execute the passed-in query with the given options
     const dbObj = dbClient.db(db);
     const result = await dbObj
         .collection(collection)
@@ -234,6 +236,7 @@ app.get("/record/query", async (req, res) => {
 // Hanlder for getting contact info whose data retention or consent will expire soon
 app.get("/contact/expire", async (req, res) => {
     // Get all params from query and calculate the target expiring date based on the param
+    const db = req.query.db;
     let expireInDays = parseInt(req.query.expireInDays);
     let targetExpireDate = new Date(Date.now());
     targetExpireDate.setDate(targetExpireDate.getDate() + expireInDays);
@@ -248,8 +251,8 @@ app.get("/contact/expire", async (req, res) => {
         });
     if (!dbClient) return;
 
-    // Try to get the record correponing to the userId in the target collection
-    const dbObj = dbClient.db("gdpr-s2");
+    // Try to get the necessary expiration informing info correponding to the soon expired consents in the central collection
+    const dbObj = dbClient.db(db);
     const collection = "central";
     const query = { consentExp: { $lt: targetExpireDate } };
     const options = { projection: { _id: 0, consentExp: 0 } };
@@ -261,23 +264,6 @@ app.get("/contact/expire", async (req, res) => {
             res.status(500).send(err);
         });
     if (!result) return;
-
-    // Loop through the result list and get contact info of each user from profile collection
-    const idOptions = { projection: { _id: 0, email: 1 } };
-    for (let index = 0; index < result.length; index++) {
-        let collection = result[index]["serviceCollection"];
-        let idQuery = { _id: result[index]["userId"] };
-        let info = await dbObj
-            .collection(collection)
-            .find(idQuery, idOptions)
-            .toArray()
-            .catch((err) => {
-                res.status(500).send(err);
-            });
-        if (!info) return;
-        console.log("info:", info);
-        result[index]["email"] = info[0]["email"];
-    }
 
     dbClient.close();
     return res.send(result);
@@ -471,5 +457,5 @@ app.delete("/record/all", jsonParser, async (req, res) => {
 });
 
 app.listen(port, () => {
-    console.log(`Example app listening on port ${port}!`);
+    console.log(`Scenario Two app listening on port ${port}!`);
 });
