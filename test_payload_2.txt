@@ -1,0 +1,187 @@
+======================= POST =======================
+localhost:9000/record
+
+----------------------- body -----------------------
+::::: COVID-19-research :::::
+{
+    "db": "gdpr-s2",
+    "collection": "COVID-19-research",
+    "consentExp": "2020-12-20",
+    "email": "test1@testdomain.com",
+    "userId": "test1",
+    "record": {
+        "firstName": "test1First",
+        "lastName": "test1Last",
+        "gender": "male",
+        "address": "test address1",
+        "bloodType": "B"
+    }
+}
+
+{
+    "db": "gdpr-s2",
+    "collection": "COVID-19-research",
+    "consentExp": "2021-12-12",
+    "email": "samZhu@testdomain.com",
+    "userId": "samZhu",
+    "record": {
+        "firstName": "Sam",
+        "lastName": "Zhu",
+        "gender": "male",
+        "address": "Sam's address1",
+        "bloodType": "O"
+    }
+}
+
+::::: sleeping-quality-research :::::
+{
+    "db": "gdpr-s2",
+    "collection": "sleeping-quality-research",
+    "consentExp": "2020-12-20",
+    "email": "test1@testdomain.com",
+    "userId": "test1",
+    "record": {
+        "firstName": "test1First",
+        "lastName": "test1Last",
+        "gender": "male",
+        "address": "test address1",
+        "hoursPerDay": "3",
+        "sleeplessNightPerMonth": "8"
+    }
+}
+
+{
+    "db": "gdpr-s2",
+    "collection": "sleeping-quality-research",
+    "consentExp": "2021-12-12",
+    "email": "samZhu@testdomain.com",
+    "userId": "samZhu",
+    "record": {
+        "firstName": "Sam",
+        "lastName": "Zhu",
+        "gender": "male",
+        "address": "Sam's address1",
+        "hoursPerDay": "2",
+        "sleeplessNightPerMonth": "4"
+    }
+}
+
+::::: height-research :::::
+{
+    "db": "gdpr-s2",
+    "collection": "height-research",
+    "consentExp": "2020-12-20",
+    "email": "test1@testdomain.com",
+    "userId": "test1",
+    "record": {
+        "firstName": "test1First",
+        "lastName": "test1Last",
+        "gender": "male",
+        "address": "test address1",
+        "height": "178 cm",
+        "footSize": "US 8.5"
+    }
+}
+
+{
+    "db": "gdpr-s2",
+    "collection": "height-research",
+    "consentExp": "2021-12-12",
+    "email": "samZhu@testdomain.com",
+    "userId": "samZhu",
+    "record": {
+        "firstName": "Sam",
+        "lastName": "Zhu",
+        "gender": "male",
+        "address": "Sam's address1",
+        "height": "181 cm",
+        "footSize": "US 95"
+    }
+}
+
+======================= GET =======================
+localhost:9000/record
+
+----------------------- query -----------------------
+::::: height-research :::::
+{
+    "db": "gdpr-s2",
+    "collection": "height-research",
+    "userId": "samZhu"
+}
+
+======================= GET =======================
+localhost:9000/record/all
+
+----------------------- query -----------------------
+{
+    "db": "gdpr-s2",
+    "userId": "samZhu",
+    "toDownload": "false"
+}
+
+======================= GET =======================
+localhost:9000/record/query
+
+----------------------- query -----------------------
+::::: height-research :::::
+{
+    "db": "gdpr-s2",
+    "collection": "height-research",
+    "query": { "footSize": "US 9.5" }
+}
+
+{
+    "db": "gdpr-s2",
+    "collection": "height-research",
+    "query": { }
+}
+
+======================= GET =======================
+localhost:9000/contact/expire
+
+----------------------- query -----------------------
+{
+    "db": "gdpr-s2",
+    "expireInDays": "30"
+}
+
+======================= PATCH =======================
+localhost:9000/record
+
+----------------------- body -----------------------
+::::: height-research :::::
+{
+    "db": "gdpr-s2",
+    "collection": "height-research",
+    "userId": "samZhu",
+    "field": "footSize",
+    "newVal": "US 9.5"
+}
+
+{
+    "db": "gdpr-s2",
+    "collection": "central",
+    "userId": "samZhu",
+    "serviceCollection": "COVID-19-researh",
+    "field": "consentExp",
+    "newVal": "2022-12-12"
+}
+
+======================= DELETE =======================
+localhost:9000/record
+
+{
+    "db": "gdpr-s2",
+    "userId": "test1",
+    "collection": "height-research"
+}
+
+======================= DELETE =======================
+localhost:9000/record/all
+
+----------------------- body -----------------------
+{
+    "db": "gdpr-s2",
+    "userId": "samZhu"
+}
