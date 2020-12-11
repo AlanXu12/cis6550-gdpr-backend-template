@@ -42,15 +42,4 @@
     "cardNum": "4543299878765432",
     "expireDate": "04/22"
   }
-},{
-  "_id": "test5",
-  "phoneNum": "5476476477",
-  "phonePlan": "Super Save",
-  "dateContractExp": {
-    "$date": "2025-12-31T00:00:00Z"
-  },
-  "paymentInfo": {
-    "cardNum": "5543299878765432",
-    "expireDate": "05/22"
-  }
 }]

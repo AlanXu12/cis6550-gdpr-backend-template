@@ -1,13 +1,4 @@
 [{
-  "_id": "test5",
-  "firstName": "test5First",
-  "lastName": "test5Last",
-  "gender": "male",
-  "dateOfBirth": {
-    "$date": "1982-01-30T00:00:00Z"
-  },
-  "address": "test address5"
-},{
   "_id": "test4",
   "firstName": "test4First",
   "lastName": "test4Last",
@@ -15,7 +6,8 @@
   "dateOfBirth": {
     "$date": "1985-01-30T00:00:00Z"
   },
-  "address": "test address4"
+  "address": "test address4",
+  "email": "test4@testdomain.com"
 },{
   "_id": "test3",
   "firstName": "test3First",
@@ -24,7 +16,8 @@
   "dateOfBirth": {
     "$date": "1983-01-30T00:00:00Z"
   },
-  "address": "test address3"
+  "address": "test address3",
+  "email": "test3@testdomain.com"
 },{
   "_id": "test2",
   "firstName": "test2First",
@@ -33,7 +26,8 @@
   "dateOfBirth": {
     "$date": "1992-01-30T00:00:00Z"
   },
-  "address": "test address2"
+  "address": "test address2",
+  "email": "test2@testdomain.com"
 },{
   "_id": "test1",
   "firstName": "test1First",
@@ -42,5 +36,26 @@
   "dateOfBirth": {
     "$date": "1991-01-31T00:00:00Z"
   },
-  "address": "test address1"
+  "address": "test address1",
+  "email": "test1@testdomain.com"
+},{
+  "_id": "test6",
+  "firstName": "test6First",
+  "lastName": "test6Last",
+  "gender": "male",
+  "dateOfBirth": {
+    "$date": "1988-06-30T00:00:00Z"
+  },
+  "address": "test address6",
+  "email": "test6@test.com"
+},{
+  "_id": "test7",
+  "firstName": "test7First",
+  "lastName": "test7Last",
+  "gender": "male",
+  "dateOfBirth": {
+    "$date": "1998-07-30T00:00:00Z"
+  },
+  "address": "test address7",
+  "email": "test7@testdomain.com"
 }]

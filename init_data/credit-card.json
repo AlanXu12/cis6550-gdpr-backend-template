@@ -1,0 +1,24 @@
+[{
+  "_id": "test1",
+  "annualIncome": 66666,
+  "creditLimit": 5000,
+  "cardType": "gold1",
+  "phoneNum": "1476476477",
+  "employmentInfo": {
+    "companyName": "test company1",
+    "companyAddress": "test company1 address",
+    "jobTitle": "test title1"
+  },
+  "cardNum": "1111222233334444"
+},{
+  "_id": "test2",
+  "annualIncome": 46666,
+  "creditLimit": 2000,
+  "cardType": "gold2",
+  "phoneNum": "2476476477",
+  "employmentInfo": {
+    "companyName": "test company2",
+    "companyAddress": "test company2 address",
+    "jobTitle": "test title2"
+  }
+}]
