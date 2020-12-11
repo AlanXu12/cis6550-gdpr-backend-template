@@ -6,16 +6,16 @@ localhost:8000/record
 {
     "db": "gdpr-s1",
     "collection": "profile",
-    "email": "test1@testdomain.com",
-    "consentExp": "2020-12-20",
-    "username": "test6",
+    "email": "kyle@testdomain.fr",
+    "consentExp": "2021-12-20",
+    "username": "kyle",
     "record": {
-        "firstName": "test6First",
-        "lastName": "test6Last",
-        "gender": "female",
-        "dateOfBirth": "1986-01-30",
-        "address": "test address6",
-        "email": "test1@testdomain.com"
+        "firstName": "kyle",
+        "lastName": "sans",
+        "gender": "male",
+        "dateOfBirth": "1996-11-30",
+        "address": "kyle address",
+        "email": "kyle@testdomain.fr"
     }
 }
 
@@ -23,8 +23,8 @@ localhost:8000/record
 {
     "db": "gdpr-s1",
     "collection": "cellphone",
-    "email": "test1@testdomain.com",
-    "consentExp": "2020-11-20",
+    "email": "kyle@testdomain.fr",
+    "consentExp": "2021-11-20",
     "username": "kyle",
     "record": {
         "phoneNum": "6476476477",
@@ -35,4 +35,55 @@ localhost:8000/record
             "expireDate": "03/24"
         }
     }
+}
+
+::::: credit-card :::::
+{
+    "db": "gdpr-s1",
+    "collection": "credit-card",
+    "email": "kyle@testdomain.fr",
+    "consentExp": "2021-11-20",
+    "username": "kyle",
+    "record": {
+        "carNum": "5579666612340987",
+        "annualIncome": 22222,
+        "creditLimit": 1000,
+        "cardType": "gold1",
+        "phoneNum": "6476476477",
+        "employmentInfo": {
+            "companyName": "kyle company",
+            "companyAddress": "kyle company address",
+            "jobTitle": "kyle title"
+        }
+    }
+}
+
+
+======================= PATCH =======================
+localhost:8000/record
+
+----------------------- body -----------------------
+{
+    "db": "gdpr-s1",
+    "collection": "cellphone",
+    "username": "kyle",
+    "field": "paymentInfo",
+    "newVal": {
+        "cardNum": "5579666612340987",
+        "expireDate": "12/24"
+    }
+}
+
+
+======================= GET =======================
+localhost:8000/record/all?username=kyle&db=gdpr-s1&toDownload=true
+
+
+======================= DELETE =======================
+localhost:8000/record/all
+
+----------------------- body -----------------------
+{
+    "db": "gdpr-s1",
+    "username": "kyle"
 }

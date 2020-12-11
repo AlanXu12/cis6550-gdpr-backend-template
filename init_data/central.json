@@ -1,21 +1,13 @@
 [{
   "_id": {
-    "$oid": "5fc730d391534a643adebee8"
-  },
-  "username": "test5",
-  "serviceCollection": "profile",
-  "consentExp": {
-    "$date": "2021-11-20T00:00:00Z"
-  }
-},{
-  "_id": {
     "$oid": "5fc7311691534a643adebee9"
   },
   "username": "test4",
   "serviceCollection": "profile",
   "consentExp": {
-    "$date": "2021-12-20T00:00:00Z"
-  }
+    "$date": "2020-12-22T00:00:00Z"
+  },
+  "email": "test4@testdomain.com"
 },{
   "_id": {
     "$oid": "5fc7312a91534a643adebeea"
@@ -24,7 +16,8 @@
   "serviceCollection": "profile",
   "consentExp": {
     "$date": "2023-12-20T00:00:00Z"
-  }
+  },
+  "email": "test3@testdomain.com"
 },{
   "_id": {
     "$oid": "5fc7313e91534a643adebeeb"
@@ -33,7 +26,8 @@
   "serviceCollection": "profile",
   "consentExp": {
     "$date": "2022-12-20T00:00:00Z"
-  }
+  },
+  "email": "test2@testdomain.com"
 },{
   "_id": {
     "$oid": "5fc7316b91534a643adebeec"
@@ -41,8 +35,9 @@
   "username": "test1",
   "serviceCollection": "profile",
   "consentExp": {
-    "$date": "2021-12-20T00:00:00Z"
-  }
+    "$date": "2020-12-20T00:00:00Z"
+  },
+  "email": "test1@testdomain.com"
 },{
   "_id": {
     "$oid": "5fc7329101dce365ba4acdde"
@@ -51,7 +46,8 @@
   "serviceCollection": "cellphone",
   "consentExp": {
     "$date": "2021-11-20T00:00:00Z"
-  }
+  },
+  "email": "test1@testdomain.com"
 },{
   "_id": {
     "$oid": "5fc732e401dce365ba4acddf"
@@ -60,7 +56,8 @@
   "serviceCollection": "cellphone",
   "consentExp": {
     "$date": "2022-11-20T00:00:00Z"
-  }
+  },
+  "email": "test2@testdomain.com"
 },{
   "_id": {
     "$oid": "5fc732f401dce365ba4acde0"
@@ -69,7 +66,8 @@
   "serviceCollection": "cellphone",
   "consentExp": {
     "$date": "2023-11-20T00:00:00Z"
-  }
+  },
+  "email": "test3@testdomain.com"
 },{
   "_id": {
     "$oid": "5fc7330701dce365ba4acde1"
@@ -77,15 +75,47 @@
   "username": "test4",
   "serviceCollection": "cellphone",
   "consentExp": {
-    "$date": "2023-11-20T00:00:00Z"
+    "$date": "2020-12-20T00:00:00Z"
+  },
+  "email": "test4@testdomain.com"
+},{
+  "_id": {
+    "$oid": "5fc9b2c930c5fc0a5ac4d13c"
+  },
+  "username": "test6",
+  "serviceCollection": "profile",
+  "consentExp": {
+    "$date": "2020-12-20T00:00:00Z"
+  },
+  "email": "test6@testdomain.com"
+},{
+  "_id": {
+    "$oid": "5fcb13efa97b864acaf338d5"
+  },
+  "username": "test7",
+  "serviceCollection": "profile",
+  "email": "test7@testdomain.com",
+  "consentExp": {
+    "$date": "2020-12-20T00:00:00Z"
   }
 },{
   "_id": {
-    "$oid": "5fc7332301dce365ba4acde2"
+    "$oid": "5fd2cb2230f2d5115bdaeb5f"
   },
-  "username": "test5",
-  "serviceCollection": "cellphone",
+  "username": "test1",
+  "serviceCollection": "credit-card",
+  "email": "test1@testdomain.com",
   "consentExp": {
-    "$date": "2023-11-20T00:00:00Z"
+    "$date": "2022-12-20T00:00:00Z"
+  }
+},{
+  "_id": {
+    "$oid": "5fd2cb4c30f2d5115bdaeb60"
+  },
+  "username": "test2",
+  "serviceCollection": "credit-card",
+  "email": "test2@testdomain.com",
+  "consentExp": {
+    "$date": "2022-12-22T00:00:00Z"
   }
 }]
