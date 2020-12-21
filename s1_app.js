@@ -17,6 +17,7 @@ let mongoClient = mongo.MongoClient;
 let url =
   "mongodb+srv://pingfan:pingfan@cluster0.iwciw.mongodb.net/test?authSource=admin&replicaSet=atlas-m7bgyt-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true";
 
+// Handler 1
 // Handler for adding new record to service collection
 app.post("/record", jsonParser, async (req, res) => {
   // Get all params from query
@@ -94,6 +95,7 @@ app.post("/record", jsonParser, async (req, res) => {
   return res.end("1 record inserted");
 });
 
+// Handler 2
 // Handler for getting one user's record in a collection
 app.get("/record", async (req, res) => {
   // Get all params from query
@@ -125,6 +127,7 @@ app.get("/record", async (req, res) => {
   return res.send(result);
 });
 
+// Handler 3
 // Handler for getting all data of one user
 app.get("/record/all", async (req, res) => {
   // Get all params from query
@@ -190,6 +193,7 @@ app.get("/record/all", async (req, res) => {
   }
 });
 
+// Handler 4
 // Hanlder for getting contact info whose data retention or consent will expire soon
 app.get("/contact/expire", async (req, res) => {
   // Get all params from query and calculate the target expiring date based on the param
@@ -224,6 +228,7 @@ app.get("/contact/expire", async (req, res) => {
   return res.send(result);
 });
 
+// Handler 5
 // Hanlder for executing DB queries for internal usage
 app.get("/record/query", async (req, res) => {
   // Get all params from query
@@ -261,6 +266,7 @@ app.get("/record/query", async (req, res) => {
   return res.send(result);
 });
 
+// Handler 6
 // Handler for updating data stored in a collection
 app.patch("/record", jsonParser, async (req, res) => {
   // Get all params from query
@@ -333,6 +339,7 @@ app.patch("/record", jsonParser, async (req, res) => {
   );
 });
 
+// Handler 7
 // Handler for deleting all info belongs to one user within a specific collection
 app.delete("/record", jsonParser, async (req, res) => {
   // Get all params from query
@@ -383,6 +390,7 @@ app.delete("/record", jsonParser, async (req, res) => {
   );
 });
 
+// Handler 8
 // Handler for deleting all info belongs to one user
 app.delete("/record/all", jsonParser, async (req, res) => {
   // Get all params from query
