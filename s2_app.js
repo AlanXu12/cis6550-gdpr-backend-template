@@ -14,8 +14,8 @@ const port = 9000;
 // MongoDB instance
 let mongo = require("mongodb");
 let mongoClient = mongo.MongoClient;
-let url =
-  "mongodb+srv://yiwei:yiwei@cluster0.iwciw.mongodb.net/test?authSource=admin&replicaSet=atlas-m7bgyt-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true";
+// MongoDB URI hided for security reasons
+let url = "";
 
 // Handler for adding new record to service collection
 app.post("/record", jsonParser, async (req, res) => {
